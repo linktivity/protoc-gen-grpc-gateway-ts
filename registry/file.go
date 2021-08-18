@@ -4,12 +4,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/atreya2011/protoc-gen-grpc-gateway-ts/data"
-	"github.com/atreya2011/protoc-gen-grpc-gateway-ts/options"
 	descriptorpb "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus" // nolint: depguard
 	"google.golang.org/protobuf/proto"
+	"pkg.linktivity.io/protoc-gen-grpc-gateway-ts/data"
+	"pkg.linktivity.io/protoc-gen-grpc-gateway-ts/options"
 )
 
 func (r *Registry) analyseFile(f *descriptorpb.FileDescriptorProto) (*data.File, error) {

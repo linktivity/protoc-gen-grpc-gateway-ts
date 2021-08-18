@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/atreya2011/protoc-gen-grpc-gateway-ts/data"
 	descriptorpb "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus" // nolint: depguard
+	"pkg.linktivity.io/protoc-gen-grpc-gateway-ts/data"
 )
 
 const (

@@ -10,9 +10,9 @@ import (
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
 	log "github.com/sirupsen/logrus" // nolint: depguard
 
-	"github.com/atreya2011/protoc-gen-grpc-gateway-ts/data"
-	"github.com/atreya2011/protoc-gen-grpc-gateway-ts/registry"
 	"github.com/pkg/errors"
+	"pkg.linktivity.io/protoc-gen-grpc-gateway-ts/data"
+	"pkg.linktivity.io/protoc-gen-grpc-gateway-ts/registry"
 )
 
 // TypeScriptGRPCGatewayGenerator is the protobuf generator for typescript

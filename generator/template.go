@@ -13,8 +13,8 @@ import (
 	"github.com/Masterminds/sprig"
 	"github.com/iancoleman/strcase"
 
-	"github.com/atreya2011/protoc-gen-grpc-gateway-ts/data"
-	"github.com/atreya2011/protoc-gen-grpc-gateway-ts/registry"
+	"pkg.linktivity.io/protoc-gen-grpc-gateway-ts/data"
+	"pkg.linktivity.io/protoc-gen-grpc-gateway-ts/registry"
 )
 
 const tmpl = `
