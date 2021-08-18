@@ -203,14 +203,6 @@ export interface InitReq extends RequestInit {
   pathPrefix?: string
 }
 
-export function replacer(key: any, value: any): any {
-  if(value && value.constructor === Uint8Array) {
-    return b64Encode(value, 0, value.length);
-  }
-
-  return value;
-}
-
 export function fetchReq<I, O>(path: string, init?: InitReq): Promise<O> {
   const {pathPrefix, ...req} = init || {}
 
@@ -517,9 +509,9 @@ func buildInitReq(method data.Method) string {
 	m := `method: "` + httpMethod + `"`
 	fields := []string{m}
 	if method.HTTPRequestBody == nil || *method.HTTPRequestBody == "*" {
-		fields = append(fields, "body: JSON.stringify(req, fm.replacer)")
+		fields = append(fields, "body: JSON.stringify(req)")
 	} else if *method.HTTPRequestBody != "" {
-		fields = append(fields, `body: JSON.stringify(req["`+*method.HTTPRequestBody+`"], fm.replacer)`)
+		fields = append(fields, `body: JSON.stringify(req["`+*method.HTTPRequestBody+`"])`)
 	}
 
 	return strings.Join(fields, ", ")
@@ -581,7 +573,7 @@ func mapScalaType(protoType string) string {
 	case "bool":
 		return "boolean"
 	case "bytes":
-		return "Uint8Array"
+		return "string"
 	}
 
 	return ""
