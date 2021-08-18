@@ -441,6 +441,15 @@ func GetTemplate(r *registry.Registry) *template.Template {
 	t = t.Funcs(sprig.TxtFuncMap())
 
 	t = t.Funcs(template.FuncMap{
+		"removeWellKnownTypes": func(dependencies []*data.Dependency) []*data.Dependency {
+			var filteredDependencies []*data.Dependency
+			for _, dependency := range dependencies {
+				if mapWellKnownType(dependency.FullyQualifiedTypeName) == "" {
+					filteredDependencies = append(filteredDependencies, dependency)
+				}
+			}
+			return filteredDependencies
+		},
 		"include": include(t),
 		"tsType": func(fieldType data.Type) string {
 			return tsType(r, fieldType)
@@ -585,7 +594,19 @@ func mapWellKnownType(wellKnownType string) string {
 	case ".google.protobuf.Empty":
 		return "Record<never, never>"
 	case ".google.protobuf.Timestamp":
-		return "Date"
+		return "string"
+	case ".google.protobuf.Duration":
+		return "string"
+	case ".google.protobuf.StringValue":
+		return "string"
+	case ".google.protobuf.BytesValue":
+		return "string"
+	case ".google.protobuf.BoolValue":
+		return "boolean"
+	case ".google.protobuf.Int64Value", ".google.protobuf.UInt64Value":
+		return "string"
+	case ".google.protobuf.Int32Value", ".google.protobuf.UInt32Value", ".google.protobuf.DoubleValue", ".google.protobuf.FloatValue":
+		return "number"
 	}
 	return ""
 }
