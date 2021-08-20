@@ -52,14 +52,19 @@ export type {{.Name}} = {
 {{end}}{{end}}
 
 {{define "services"}}{{range .}}export class {{.Name}} {
+  constructor(
+    private fetcher = fm.fetchReq,
+    private streamFetcher = fm.fetchStreamingRequest,
+    private reqIniter = (n: fm.InitReq) => fm.InitReq,
+  ) { }
 {{- range .Methods}}  
 {{- if .ServerStreaming }}
-  static {{.Name}}(req: {{tsType .Input}}, entityNotifier?: fm.NotifyStreamEntityArrival<{{tsType .Output}}>, initReq?: fm.InitReq): Promise<void> {
-    return fm.fetchStreamingRequest<{{tsType .Input}}, {{tsType .Output}}>(` + "`{{renderURL .}}`" + `, entityNotifier, {...initReq, {{buildInitReq .}}})
+  {{.Name}}(req: {{tsType .Input}}, entityNotifier?: fm.NotifyStreamEntityArrival<{{tsType .Output}}>, initReq?: fm.InitReq): Promise<void> {
+    return this.streamFetcher<{{tsType .Input}}, {{tsType .Output}}>(` + "`{{renderURL .}}`" + `, entityNotifier, {...this.reqIniter(initReq), {{buildInitReq .}}})
   }
 {{- else }}
-  static {{.Name}}(req: {{tsType .Input}}, initReq?: fm.InitReq): Promise<{{tsType .Output}}> {
-    return fm.fetchReq<{{tsType .Input}}, {{tsType .Output}}>(` + "`{{renderURL .}}`" + `, {...initReq, {{buildInitReq .}}})
+  {{.Name}}(req: {{tsType .Input}}, initReq?: fm.InitReq): Promise<{{tsType .Output}}> {
+    return this.fetcher<{{tsType .Input}}, {{tsType .Output}}>(` + "`{{renderURL .}}`" + `, {...this.reqIniter(initReq), {{buildInitReq .}}})
   }
 {{- end}}
 {{- end}}
