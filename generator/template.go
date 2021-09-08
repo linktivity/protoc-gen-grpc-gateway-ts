@@ -19,8 +19,7 @@ import (
 
 const tmpl = `
 {{- define "dependencies"}}{{range removeWellKnownTypes .}}
-import * as {{.ModuleIdentifier}} from "{{.SourceFile}}"{{ if eq .ModuleIdentifier "fm"}}
-import type { InitReq } from "{{.SourceFile}}"{{end}}{{end}}
+import * as {{.ModuleIdentifier}} from "{{.SourceFile}}"{{end}}
 {{end}}
 
 {{define "enums"}}{{range .}}
@@ -56,15 +55,15 @@ export type {{.Name}} = {
   constructor(
     private fetcher = fm.fetchReq,
     private streamFetcher = fm.fetchStreamingRequest,
-    private reqIniter = (n: InitReq) => InitReq,
+    private reqIniter = (n: fm.InitReq) => fm.InitReq,
   ) { }
 {{- range .Methods}}  
 {{- if .ServerStreaming }}
-  {{.Name}}(req: {{tsType .Input}}, entityNotifier?: fm.NotifyStreamEntityArrival<{{tsType .Output}}>, initReq?: InitReq): Promise<void> {
+  {{.Name}}(req: {{tsType .Input}}, entityNotifier?: fm.NotifyStreamEntityArrival<{{tsType .Output}}>, initReq?: fm.InitReq): Promise<void> {
     return this.streamFetcher<{{tsType .Input}}, {{tsType .Output}}>(` + "`{{renderURL .}}`" + `, entityNotifier, {...this.reqIniter(initReq), {{buildInitReq .}}})
   }
 {{- else }}
-  {{.Name}}(req: {{tsType .Input}}, initReq?: InitReq): Promise<{{tsType .Output}}> {
+  {{.Name}}(req: {{tsType .Input}}, initReq?: fm.InitReq): Promise<{{tsType .Output}}> {
     return this.fetcher<{{tsType .Input}}, {{tsType .Output}}>(` + "`{{renderURL .}}`" + `, {...this.reqIniter(initReq), {{buildInitReq .}}})
   }
 {{- end}}
