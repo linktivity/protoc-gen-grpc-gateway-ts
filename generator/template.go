@@ -53,8 +53,8 @@ export type {{.Name}} = {
 
 {{define "services"}}{{range .}}export class {{.Name}} {
   constructor(
-    private reqIniter = (n: fm.InitReq) => n,
     private fetcher = fm.fetchReq,
+    private reqIniter = (n: fm.InitReq) => n,
     private streamFetcher = fm.fetchStreamingRequest,
   ) { }
 {{- range .Methods}}  
