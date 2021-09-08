@@ -55,7 +55,7 @@ export type {{.Name}} = {
   constructor(
     private fetcher = fm.fetchReq,
     private streamFetcher = fm.fetchStreamingRequest,
-    private reqIniter = (n: fm.InitReq) => fm.InitReq,
+    private reqIniter = (n: fm.InitReq) => n,
   ) { }
 {{- range .Methods}}  
 {{- if .ServerStreaming }}
