@@ -89,6 +89,7 @@ type OneOf<T> =
         : never)
     : never);
 {{end}}
+export type ValuesOf<T> = T[keyof T];
 {{- if .Enums}}{{include "enums" .Enums}}{{end}}
 {{- if .Messages}}{{include "messages" .Messages}}{{end}}
 {{- if .Services}}{{include "services" .Services}}{{end}}
@@ -556,7 +557,7 @@ func tsType(r *registry.Registry, fieldType data.Type) string {
 		typeStr = mapScalaType(info.Type)
 	} else if !info.IsExternal {
     if typeInfo.ProtoType == descriptorpb.FieldDescriptorProto_TYPE_ENUM {
-      typeStr = fmt.Sprintf("typeof %s[keyof typeof %s]", typeInfo.PackageIdentifier, typeInfo.PackageIdentifier)
+      typeStr = fmt.Sprintf("ValuesOf<typeof %s>", typeInfo.PackageIdentifier)
     } else {
       typeStr = typeInfo.PackageIdentifier
     }
