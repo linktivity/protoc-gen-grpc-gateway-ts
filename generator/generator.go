@@ -3,6 +3,7 @@ package generator
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -78,7 +79,7 @@ func (t *TypeScriptGRPCGatewayGenerator) Generate(req *plugin.CodeGeneratorReque
 		needToGenerateFetchModule = needToGenerateFetchModule || fileData.Services.NeedsFetchModule()
 	}
 
-	if needToGenerateFetchModule {
+	if needToGenerateFetchModule && !t.fetchModuleExists() {
 		// generate fetch module
 		fetchTmpl := GetFetchModuleTemplate()
 		log.Debugf("generate fetch template")
@@ -113,6 +114,14 @@ func (t *TypeScriptGRPCGatewayGenerator) generateFile(fileData *data.File, tmpl 
 		InsertionPoint: nil,
 		Content:        &content,
 	}, nil
+}
+
+func (t *TypeScriptGRPCGatewayGenerator) fetchModuleExists() bool {
+	fileName := filepath.Join(t.Registry.FetchModuleDirectory, t.Registry.FetchModuleFilename)
+	if _, err := os.Stat(fileName); errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+	return true
 }
 
 func (t *TypeScriptGRPCGatewayGenerator) generateFetchModule(tmpl *template.Template) (*plugin.CodeGeneratorResponse_File, error) {

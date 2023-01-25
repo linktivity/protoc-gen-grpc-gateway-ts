@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
-
+  descriptorpb "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/Masterminds/sprig"
@@ -23,11 +23,11 @@ import * as {{.ModuleIdentifier}} from "{{.SourceFile}}"{{end}}
 {{end}}
 
 {{define "enums"}}{{range .}}
-export enum {{.Name}} {
+export const {{.Name}} = {
 {{- range .Values}}
-  {{.}} = "{{.}}",
+  {{.}}: "{{.}}",
 {{- end}}
-}
+} as const;
 {{end}}{{end}}
 
 {{define "messages"}}
@@ -45,7 +45,7 @@ export type {{.Name}} = Base{{.Name}}
 {{- else -}}
 export type {{.Name}} = {
 {{- range .Fields}}
-  {{fieldName .Name}}?: {{tsType .}}
+  {{fieldName .Name}}?: {{tsType .}};
 {{- end}}
 }
 {{end}}
@@ -89,6 +89,7 @@ type OneOf<T> =
         : never)
     : never);
 {{end}}
+export type ValuesOf<T> = T[keyof T];
 {{- if .Enums}}{{include "enums" .Enums}}{{end}}
 {{- if .Messages}}{{include "messages" .Messages}}{{end}}
 {{- if .Services}}{{include "services" .Services}}{{end}}
@@ -555,7 +556,12 @@ func tsType(r *registry.Registry, fieldType data.Type) string {
 	if strings.Index(info.Type, ".") != 0 {
 		typeStr = mapScalaType(info.Type)
 	} else if !info.IsExternal {
-		typeStr = typeInfo.PackageIdentifier
+    if typeInfo.ProtoType == descriptorpb.FieldDescriptorProto_TYPE_ENUM {
+      typeStr = fmt.Sprintf("ValuesOf<typeof %s>", typeInfo.PackageIdentifier)
+    } else {
+      typeStr = typeInfo.PackageIdentifier
+    }
+		
 	} else {
 		typeStr = mapWellKnownType(info.Type)
 		if typeStr == "" {
